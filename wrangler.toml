@@ -2,6 +2,9 @@ name = "castle-of-deceit"
 main = "worker.js"
 compatibility_date = "2025-01-01"
 
+[assets]
+directory = "./public"
+
 [[durable_objects.bindings]]
 name = "ROOMS"
 class_name = "RoomObject"
