@@ -1,260 +1,439 @@
 <!DOCTYPE html>
-<html><head><meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
 <title>Castle of Deceit</title>
 <style>
-*{box-sizing:border-box}
-body{margin:0;background:#14121a;color:#eee;font-family:system-ui,sans-serif;overflow:hidden}
+:root{--gold:#e8c26a;--bg:#0e0b14;--pan:#1b1626;--red:#e05252}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent;-webkit-user-select:none;user-select:none}
+html,body{margin:0;height:100%;background:var(--bg);color:#efe8d8;font-family:Georgia,"Times New Roman",serif;overflow:hidden}
+body{position:fixed;inset:0}
 .hidden{display:none!important}
-.screen{position:fixed;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;padding:20px;background:#14121a;z-index:10;overflow:auto}
-h1{margin:0;font-size:28px;color:#e8c26a}
-input{padding:12px;font-size:18px;border-radius:8px;border:0;width:240px;text-align:center}
-button{padding:12px 20px;font-size:17px;border:0;border-radius:10px;background:#6b4fd8;color:#fff}
+input{-webkit-user-select:text;user-select:text;padding:13px;font-size:18px;border-radius:12px;border:2px solid #3a3050;background:#120e1a;color:#fff;width:260px;text-align:center;font-family:inherit}
+input:focus{outline:none;border-color:var(--gold)}
+button{font-family:inherit;padding:13px 22px;font-size:17px;border:0;border-radius:12px;background:#5a3fc0;color:#fff;box-shadow:0 4px 0 #2d1f7a}
+button:active{transform:translateY(3px);box-shadow:0 1px 0 #2d1f7a}
 button:disabled{opacity:.35}
-#c{position:fixed;inset:0;touch-action:none}
-#hud{position:fixed;top:6px;left:0;right:0;text-align:center;font-size:15px;pointer-events:none;text-shadow:0 1px 3px #000}
-#joy{position:fixed;left:20px;bottom:30px;width:130px;height:130px;border-radius:50%;background:#ffffff22;touch-action:none}
-#knob{position:absolute;left:45px;top:45px;width:40px;height:40px;border-radius:50%;background:#ffffffaa;pointer-events:none}
-#acts{position:fixed;right:16px;bottom:30px;display:flex;flex-direction:column;gap:10px}
-#acts button{width:110px}
-#day{background:#14121aee;justify-content:flex-start}
-#chat{width:100%;max-width:420px;flex:1;min-height:100px;overflow:auto;background:#0006;border-radius:8px;padding:8px;font-size:15px}
-#votes{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;max-width:420px}
-#toast{position:fixed;top:40px;left:50%;transform:translateX(-50%);background:#000c;padding:10px 16px;border-radius:10px;z-index:30;text-align:center;max-width:90%}
+.gold{background:linear-gradient(#f4d683,#c9972f);color:#2a1a05;font-weight:bold;box-shadow:0 4px 0 #8a6414}
+.screen{position:fixed;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;padding:20px;z-index:10;overflow:auto;background:radial-gradient(ellipse at 50% 30%,#2a1d44 0%,#0e0b14 70%)}
+h1{margin:0;font-size:34px;color:var(--gold);letter-spacing:2px;text-shadow:0 3px 0 #000,0 0 24px #e8c26a55;text-align:center}
+.logo{font-size:64px;filter:drop-shadow(0 6px 10px #000)}
+.sub{margin:0;opacity:.6;font-style:italic}
+.or{opacity:.5;font-size:14px;margin-top:6px}
+#err{color:#ff8080;min-height:20px;text-align:center}
+label{font-size:13px;opacity:.6;letter-spacing:2px;text-transform:uppercase}
+#c{position:fixed;inset:0;width:100%;height:100%;touch-action:none}
+#top{position:fixed;top:max(8px,env(safe-area-inset-top));left:10px;display:flex;flex-direction:column;gap:6px;pointer-events:none;z-index:5}
+.chip{background:#000a;border:1px solid #ffffff22;border-radius:20px;padding:6px 14px;font-size:15px;width:fit-content}
+#bar{width:170px;height:12px;border-radius:8px;background:#000a;border:1px solid #ffffff33;overflow:hidden}
+#barfill{height:100%;width:0;background:linear-gradient(90deg,#3cc46a,#9dff7a);transition:width .4s}
+#mini{position:fixed;top:max(8px,env(safe-area-inset-top));right:10px;width:120px;height:120px;border-radius:12px;border:2px solid #e8c26a88;background:#000;z-index:5;pointer-events:none}
+#joy{position:fixed;left:max(22px,env(safe-area-inset-left));bottom:max(30px,env(safe-area-inset-bottom));width:150px;height:150px;border-radius:50%;background:radial-gradient(#ffffff22,#ffffff0d);border:2px solid #ffffff33;touch-action:none;z-index:5}
+#knob{position:absolute;left:50px;top:50px;width:50px;height:50px;border-radius:50%;background:#ffffffbb;pointer-events:none;box-shadow:0 3px 8px #0008}
+#acts{position:fixed;right:max(22px,env(safe-area-inset-right));bottom:max(30px,env(safe-area-inset-bottom));display:flex;gap:14px;align-items:flex-end;z-index:5}
+.act{width:86px;height:86px;border-radius:50%;padding:0;font-size:30px;display:flex;flex-direction:column;align-items:center;justify-content:center;line-height:1;gap:2px}
+.act small{font-size:11px;letter-spacing:1px}
+#bkill{background:#c23030;box-shadow:0 4px 0 #6d1212}
+#btask{background:#d9a21b;box-shadow:0 4px 0 #7a5a0a}
+#brep{background:#3a7bd5;box-shadow:0 4px 0 #1a3f7a}
+.av{display:inline-flex;width:38px;height:38px;border-radius:50%;align-items:center;justify-content:center;font-weight:bold;font-size:18px;color:#fff;border:2px solid #fff6;text-shadow:0 1px 2px #000;flex:none}
+#plist{display:flex;flex-direction:column;gap:8px;min-width:260px}
+.prow{display:flex;align-items:center;gap:10px;background:#ffffff0f;padding:6px 12px;border-radius:12px}
+#day{justify-content:flex-start;background:radial-gradient(ellipse at 50% 0,#3a1d2a,#0e0b14 70%)}
+#chat{width:100%;max-width:460px;flex:1;min-height:90px;overflow:auto;background:#0007;border-radius:12px;padding:10px;font-size:15px;line-height:1.5;-webkit-user-select:text;user-select:text}
+#votes{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:10px;width:100%;max-width:460px}
+.vcard{display:flex;align-items:center;gap:8px;padding:8px 10px;font-size:15px;text-align:left;background:#2a2140;box-shadow:0 3px 0 #120c20;position:relative}
+.vcard i{position:absolute;right:8px;top:6px;font-style:normal}
+.vcard.dead{opacity:.4}
+.vcard.mine{outline:3px solid var(--gold)}
+#banner{position:fixed;inset:0;z-index:40;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;text-align:center;padding:20px;background:#000d;animation:fade .3s}
+#banner .big{font-size:56px;font-weight:bold;text-shadow:0 4px 0 #000,0 0 30px currentColor;letter-spacing:3px}
+#banner .em{font-size:90px}
+@keyframes fade{from{opacity:0}to{opacity:1}}
+#toast{position:fixed;top:60px;left:50%;transform:translateX(-50%);background:#000d;border:1px solid #ffffff33;padding:10px 18px;border-radius:12px;z-index:30;text-align:center;max-width:90%}
+details{max-width:300px;opacity:.7;font-size:14px}
 </style></head><body>
 
 <div id="menu" class="screen">
+  <div class="logo">🏰</div>
   <h1>Castle of Deceit</h1>
-  <input id="name" placeholder="Your name" maxlength="16">
-  <button id="create">Create room</button>
-  <input id="code" placeholder="Room code" maxlength="4" style="text-transform:uppercase">
-  <button id="join">Join room</button>
-  <div id="err" style="color:#f77"></div>
+  <p class="sub">Trust no one.</p>
+  <label>Your name</label>
+  <input id="name" placeholder="Enter your name" maxlength="16" autocomplete="off">
+  <button id="create" class="gold">⚔️ Create room</button>
+  <div class="or">— or join a friend —</div>
+  <input id="code" placeholder="ROOM CODE" maxlength="4" autocapitalize="characters" autocomplete="off" style="text-transform:uppercase;letter-spacing:6px">
+  <button id="join">🚪 Join room</button>
+  <div id="err"></div>
+  <details><summary>How to play</summary>
+    Innocents do tasks (yellow icons) and hunt for the murderer. Murderers sneak and kill. Find a body, press REPORT, then discuss and vote. You only see nearby, so stay alert!</details>
 </div>
 
 <div id="lobby" class="screen hidden">
-  <div>Room code</div>
-  <h1 id="lcode" style="font-size:56px;letter-spacing:8px"></h1>
+  <label>Room code</label>
+  <h1 id="lcode" style="font-size:64px;letter-spacing:10px"></h1>
+  <button id="copy">📋 Copy code</button>
   <div id="plist"></div>
-  <button id="start" class="hidden">Start game</button>
-  <div id="wait">Waiting for host... (3+ players needed)</div>
+  <div style="display:flex;gap:8px;align-items:center">
+    <input id="rename" placeholder="Change name" maxlength="16" style="width:170px;padding:9px;font-size:16px">
+    <button id="saveName" style="padding:9px 14px;font-size:15px">Save</button>
+  </div>
+  <button id="start" class="gold hidden">▶ Start game</button>
+  <div id="wait">Waiting for the host… (3+ players needed)</div>
 </div>
 
 <canvas id="c"></canvas>
-<div id="hud"></div>
-<div id="joy"><div id="knob"></div></div>
-<div id="acts">
-  <button id="bkill" class="hidden">KILL</button>
-  <button id="btask" class="hidden">TASK</button>
-  <button id="brep" class="hidden">REPORT</button>
+<div id="top" class="hidden">
+  <div class="chip" id="rolechip"></div>
+  <div class="chip" id="clock"></div>
+  <div id="bar"><div id="barfill"></div></div>
+</div>
+<canvas id="mini" width="240" height="240" class="hidden"></canvas>
+<div id="joy" class="hidden"><div id="knob"></div></div>
+<div id="acts" class="hidden">
+  <button id="bkill" class="act hidden">🗡️<small>KILL</small></button>
+  <button id="btask" class="act hidden">✨<small>TASK</small></button>
+  <button id="brep" class="act hidden">📢<small>REPORT</small></button>
 </div>
 
 <div id="day" class="screen hidden">
-  <h2 id="dtitle"></h2>
+  <h1 id="dtitle" style="font-size:26px"></h1>
   <div id="chat"></div>
-  <div><input id="msg" placeholder="Say something" maxlength="200" style="width:200px"> <button id="send">Send</button></div>
+  <div style="display:flex;gap:8px">
+    <input id="msg" placeholder="Say something…" maxlength="200" style="width:230px;padding:10px">
+    <button id="send" style="padding:10px 16px">Send</button>
+  </div>
   <div id="votes"></div>
 </div>
 
 <div id="over" class="screen hidden">
+  <div class="logo" id="oemoji"></div>
   <h1 id="otitle"></h1>
-  <div id="oroles"></div>
-  <button id="again" class="hidden">Play again</button>
+  <div id="oroles" style="display:flex;flex-direction:column;gap:8px"></div>
+  <button id="again" class="gold hidden">🔁 Play again</button>
+  <div id="owait" class="hidden">Waiting for the host…</div>
 </div>
 
+<div id="banner" class="hidden"></div>
 <div id="toast" class="hidden"></div>
-
 <script>
 const $=id=>document.getElementById(id);
-const STATIONS=[[300,300],[1000,250],[1700,300],[250,1000],[1750,1000],[300,1700],[1000,1750],[1700,1700],[1000,1000]].map((p,i)=>({id:"t"+i,x:p[0],y:p[1]}));
+const R=14,VIS=340;
+
+/* ---------- MAP DATA ---------- */
+const ROOMS=[
+{n:"Throne Room",x:750,y:100,w:500,h:380,a:"#3b1a28",b:"#43202f"},
+{n:"Kitchen",x:100,y:100,w:500,h:400,a:"#4a3322",b:"#523a27"},
+{n:"Dungeon",x:1400,y:100,w:500,h:400,a:"#222a38",b:"#283142"},
+{n:"Armory",x:100,y:700,w:420,h:600,a:"#33343c",b:"#3a3b45"},
+{n:"Great Hall",x:700,y:700,w:600,h:600,a:"#3a3350",b:"#403858"},
+{n:"Library",x:1480,y:700,w:420,h:600,a:"#4a3520",b:"#533c25"},
+{n:"Garden",x:100,y:1500,w:500,h:400,a:"#1f4a2a",b:"#245431"},
+{n:"Chapel",x:750,y:1500,w:500,h:400,a:"#4a4658",b:"#524e62"},
+{n:"Wine Cellar",x:1400,y:1500,w:500,h:400,a:"#3a2327",b:"#432a2e"}];
+const HALLS=[[940,470,120,240],[940,1290,120,220],[510,940,200,120],[1290,940,200,120],[280,490,120,220],[1600,490,120,220],[280,1290,120,220],[1600,1290,120,220],[590,260,170,120],[1240,260,170,120],[590,1660,170,120],[1240,1660,170,120]].map(a=>({x:a[0],y:a[1],w:a[2],h:a[3]}));
+const ALL=ROOMS.concat(HALLS);
+const TASKS=[
+{id:"t0",x:1000,y:300,e:"👑",n:"Polish the crown"},
+{id:"t1",x:300,y:320,e:"🍲",n:"Stir the stew"},
+{id:"t2",x:1650,y:320,e:"🔑",n:"Unlock the cell"},
+{id:"t3",x:300,y:1000,e:"🗡️",n:"Sharpen swords"},
+{id:"t4",x:1700,y:1000,e:"📜",n:"Sort the scrolls"},
+{id:"t5",x:300,y:1700,e:"🌹",n:"Water the roses"},
+{id:"t6",x:1650,y:1700,e:"🍷",n:"Tap the barrel"},
+{id:"t7",x:1000,y:1700,e:"🕯️",n:"Light the candles"},
+{id:"t8",x:1000,y:830,e:"🏺",n:"Dust the vase"}];
+const DECOR=[
+["🚩",800,150,34],["🚩",1200,150,34],["🪑",1000,150,52],["💎",880,430,26],["💎",1120,430,26],
+["🍞",150,450,28],["🥖",200,455,28],["🫖",540,150,30],["🧂",540,440,26],["🥘",150,150,30],
+["⛓️",1450,150,30],["🦴",1850,450,28],["🕸️",1850,140,34],["🕸️",1450,450,30],["💀",1850,300,28],
+["⚔️",150,760,34],["🛡️",150,1240,34],["🏹",470,760,32],["🪓",470,1240,32],
+["🏺",735,735,28],["🏺",1265,735,28],["🏺",735,1265,28],["🏺",1265,1265,28],
+["📚",1520,760,32],["📚",1860,760,32],["🪔",1520,1250,28],["🕯️",1860,1250,28],
+["🌳",150,1550,50],["🌳",550,1850,46],["🌿",540,1560,30],["🌼",160,1850,28],["🪴",330,1850,30],
+["🔔",1000,1540,34],["🕯️",800,1850,26],["🕯️",1200,1850,26],["🪦",790,1540,28],["🪦",1210,1540,28],
+["🛢️",1450,1560,34],["🛢️",1850,1560,34],["🍾",1850,1850,28],["📦",1450,1850,32],["🐀",1650,1850,24]];
+const MAP=document.createElement("canvas");MAP.width=MAP.height=2000;
+
+function tiles(g,r,a,b,shade){
+  g.save();g.beginPath();g.rect(r.x,r.y,r.w,r.h);g.clip();
+  const s=50;
+  for(let i=0;i*s<r.w;i++)for(let j=0;j*s<r.h;j++){g.fillStyle=(i+j)%2?a:b;g.fillRect(r.x+i*s,r.y+j*s,s,s)}
+  if(shade){g.strokeStyle="rgba(0,0,0,.45)";g.lineWidth=26;g.strokeRect(r.x,r.y,r.w,r.h)}
+  g.restore();
+}
+function glow(g,x,y,rad,col){const gr=g.createRadialGradient(x,y,2,x,y,rad);gr.addColorStop(0,col);gr.addColorStop(1,"rgba(255,160,40,0)");g.fillStyle=gr;g.fillRect(x-rad,y-rad,rad*2,rad*2)}
+function buildMap(){
+  const g=MAP.getContext("2d");
+  g.fillStyle="#0b0911";g.fillRect(0,0,2000,2000);
+  for(let i=0;i<1800;i++){g.fillStyle="rgba(255,255,255,"+(Math.random()*0.035)+")";g.fillRect(Math.random()*2000,Math.random()*2000,Math.random()*34+4,Math.random()*10+3)}
+  g.fillStyle="#4a4560";for(const r of ALL)g.fillRect(r.x-16,r.y-16,r.w+32,r.h+32);
+  g.fillStyle="#2a2638";for(const r of ALL)g.fillRect(r.x-8,r.y-8,r.w+16,r.h+16);
+  for(const r of HALLS)tiles(g,r,"#2c293a","#322e44",false);
+  for(const r of ROOMS)tiles(g,r,r.a,r.b,true);
+  // throne carpet
+  g.fillStyle="#8a1c2b";g.fillRect(950,100,100,380);
+  g.strokeStyle="#e8c26a";g.lineWidth=4;g.strokeRect(954,104,92,372);
+  // hall rune circle
+  g.strokeStyle="rgba(232,194,106,.35)";g.lineWidth=5;
+  g.beginPath();g.arc(1000,1000,210,0,7);g.stroke();g.beginPath();g.arc(1000,1000,150,0,7);g.stroke();
+  for(let i=0;i<5;i++){const a1=i*4*Math.PI/5-Math.PI/2,a2=(i+1)*4*Math.PI/5-Math.PI/2;g.beginPath();g.moveTo(1000+Math.cos(a1)*210,1000+Math.sin(a1)*210);g.lineTo(1000+Math.cos(a2)*210,1000+Math.sin(a2)*210);g.stroke()}
+  // library shelves
+  const cols=["#a33","#36a","#3a6","#c93","#839"];
+  for(let x=1500;x<1880;x+=14){g.fillStyle=cols[(x/14|0)%5];g.fillRect(x,712,10,26)}
+  g.fillStyle="#2e1d0e";g.fillRect(1500,738,380,6);
+  // garden flower beds
+  g.fillStyle="#2f6a3b";g.fillRect(180,1580,160,70);g.fillRect(380,1780,160,70);
+  // wine cellar barrels row & chapel pews
+  g.fillStyle="#5a3a22";for(let x=800;x<1200;x+=100){g.fillRect(x,1580,60,16);g.fillRect(x,1780,60,16)}
+  // room names
+  g.fillStyle="rgba(255,255,255,.22)";g.font="bold 30px Georgia";g.textAlign="center";
+  for(const r of ROOMS)g.fillText(r.n.toUpperCase(),r.x+r.w/2,r.y+r.h-22);
+  // torch glow + torches
+  for(const r of ROOMS){for(const t of [[r.x+34,r.y+34],[r.x+r.w-34,r.y+34]]){glow(g,t[0],t[1],120,"rgba(255,170,60,.28)")}}
+  g.textBaseline="middle";
+  for(const r of ROOMS){g.font="26px serif";g.fillText("🔥",r.x+34,r.y+34);g.fillText("🔥",r.x+r.w-34,r.y+34)}
+  for(const d of DECOR){g.font=d[3]+"px serif";g.fillText(d[0],d[1],d[2])}
+}
+buildMap();
+
+function inRect(x,y){for(const r of ALL)if(x>=r.x&&x<=r.x+r.w&&y>=r.y&&y<=r.y+r.h)return true;return false}
+function canStand(x,y){return inRect(x-R,y)&&inRect(x+R,y)&&inRect(x,y-R)&&inRect(x,y+R)}
+
+/* ---------- STATE ---------- */
 let ws,me=null,cfg={mapW:2000,mapH:2000,killRange:60,reportRange:100,tasksPerPlayer:5,killCooldownMs:20000};
 let S={phase:"LOBBY",players:[],bodies:[],hostId:null,endsAt:0};
-let role="innocent",partners=[],done=new Set(),pos={x:1000,y:1000},others={},lastKill=0,voted=new Set(),tasks={done:0,needed:0},offset=0,joy={x:0,y:0},keys={};
+let role="innocent",partners=[],done=new Set(),pos={x:1000,y:1000},cam={x:1000,y:1000},others={},lastKill=0,voted=new Set(),myVote=null,tasks={done:0,needed:0},offset=0,joy={x:0,y:0},keys={},moving=false,face=1;
 let killTarget=null,station=null,body=null;
-
 const esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
-const hash=s=>{let h=0;for(const c of s)h=h*31+c.charCodeAt(0)|0;return Math.abs(h)};
-function screen(n){["menu","lobby","day","over"].forEach(s=>$(s).classList.toggle("hidden",s!==n))}
-function toast(t,ms){const e=$("toast");e.textContent=t;e.classList.remove("hidden");clearTimeout(toast.t);toast.t=setTimeout(()=>e.classList.add("hidden"),ms||3000)}
+const hash=s=>{let h=0;for(const c of s)h=(h*31+c.charCodeAt(0))|0;return Math.abs(h)};
+const hue=id=>hash(id)%360;
+const av=p=>'<span class="av" style="background:hsl('+hue(p.id)+',65%,50%)">'+esc((p.name||"?")[0].toUpperCase())+'</span>';
+function screen(n){["menu","lobby","day","over"].forEach(s=>$(s).classList.toggle("hidden",s!==n));
+  const game=n===null;["top","mini","joy","acts"].forEach(s=>$(s).classList.toggle("hidden",!game))}
+function toast(t,ms){const e=$("toast");e.textContent=t;e.classList.remove("hidden");clearTimeout(toast.t);toast.t=setTimeout(()=>e.classList.add("hidden"),ms||2500)}
+function banner(html,ms){const b=$("banner");b.innerHTML=html;b.classList.remove("hidden");clearTimeout(banner.t);banner.t=setTimeout(()=>b.classList.add("hidden"),ms||2500)}
+let AC;function beep(f,d,ty){try{AC=AC||new(window.AudioContext||window.webkitAudioContext)();const o=AC.createOscillator(),g=AC.createGain();o.type=ty||"square";o.frequency.value=f;g.gain.value=.05;o.connect(g);g.connect(AC.destination);o.start();g.gain.exponentialRampToValueAtTime(.0001,AC.currentTime+d);o.stop(AC.currentTime+d)}catch(e){}}
 function send(o){if(ws&&ws.readyState===1)ws.send(JSON.stringify(o))}
-function meP(){return S.players.find(p=>p.id===me)}
-function isAlive(){const p=meP();return !p||p.isAlive}
-function nameOf(id){const p=S.players.find(p=>p.id===id);return p?p.name:"Someone"}
+const meP=()=>S.players.find(p=>p.id===me);
+const isAlive=()=>{const p=meP();return !p||p.isAlive};
+const nameOf=id=>{const p=S.players.find(p=>p.id===id);return p?p.name:"Someone"};
+try{$("name").value=localStorage.getItem("cod_name")||""}catch(e){}
 
-function connect(code){
-  $("err").textContent="";
-  const nm=encodeURIComponent($("name").value.trim()||"Player");
-  ws=new WebSocket((location.protocol==="https:"?"wss://":"ws://")+location.host+"/ws/"+code+"?name="+nm);
-  ws.onopen=()=>send({t:"ping"});
+/* ---------- NETWORK ---------- */
+function getName(){const n=$("name").value.trim();if(!n){$("err").textContent="Please enter your name first!";$("name").focus();return null}
+  try{localStorage.setItem("cod_name",n)}catch(e){}return n}
+function connect(code,name){
+  $("err").textContent="";me=null;
+  ws=new WebSocket((location.protocol==="https:"?"wss://":"ws://")+location.host+"/ws/"+code+"?name="+encodeURIComponent(name));
   ws.onmessage=e=>onMsg(JSON.parse(e.data));
-  ws.onclose=()=>{if(!me){$("err").textContent="Could not join (wrong code, room full, or game started)."}else{toast("Disconnected",8000)}};
+  ws.onclose=()=>{if(!me){$("err").textContent="Could not join: wrong code, room full, or game already started."}else toast("Disconnected from server",8000)};
 }
-setInterval(()=>send({t:"ping"}),10000);
-$("create").onclick=async()=>{try{const r=await fetch("/api/create");const j=await r.json();connect(j.code)}catch(e){$("err").textContent="Server error"}};
-$("join").onclick=()=>{const c=$("code").value.trim().toUpperCase();if(c.length===4)connect(c);else $("err").textContent="Enter the 4-letter code"};
+setInterval(()=>send({t:"ping"}),8000);
+$("create").onclick=async()=>{const n=getName();if(!n)return;beep(520,.1);
+  try{const r=await fetch("/api/create");const j=await r.json();connect(j.code,n)}catch(e){$("err").textContent="Server error, try again."}};
+$("join").onclick=()=>{const n=getName();if(!n)return;const c=$("code").value.trim().toUpperCase();
+  if(c.length!==4){$("err").textContent="Enter the 4-letter room code.";return}beep(520,.1);connect(c,n)};
 $("start").onclick=()=>send({t:"start"});
 $("again").onclick=()=>send({t:"playAgain"});
+$("copy").onclick=()=>{try{navigator.clipboard.writeText($("lcode").textContent);toast("Code copied!")}catch(e){toast("Code: "+$("lcode").textContent)}};
+$("saveName").onclick=()=>{const v=$("rename").value.trim();if(v){send({t:"setName",name:v});try{localStorage.setItem("cod_name",v)}catch(e){}$("rename").value="";toast("Name updated")}};
 $("send").onclick=()=>{const v=$("msg").value.trim();if(v){send({t:"chat",text:v});$("msg").value=""}};
-$("bkill").onclick=()=>{if(killTarget)send({t:"kill",targetId:killTarget.id})};
-$("btask").onclick=()=>{if(station){send({t:"task",taskId:station.id});done.add(station.id)}};
+$("msg").onkeydown=e=>{if(e.key==="Enter")$("send").onclick()};
+$("bkill").onclick=()=>{if(killTarget){send({t:"kill",targetId:killTarget.id});beep(120,.3,"sawtooth")}};
+$("btask").onclick=()=>{if(station){send({t:"task",taskId:station.id});done.add(station.id);beep(660,.1);setTimeout(()=>beep(990,.15),110)}};
 $("brep").onclick=()=>{if(body)send({t:"report",bodyId:body.id})};
 
 function onMsg(m){
   switch(m.t){
     case "pong":offset=m.now-Date.now();break;
     case "welcome":me=m.id;cfg=m.config;$("lcode").textContent=m.code;break;
-    case "role":role=m.role;partners=m.partners;done=new Set();tasks={done:0,needed:0};lastKill=Date.now();
-      toast(role==="murderer"?"You are a MURDERER. Eliminate the innocents!":"You are INNOCENT. Do tasks, find the murderer!",5000);break;
+    case "role":
+      role=m.role;partners=m.partners;done=new Set();tasks={done:0,needed:0};lastKill=Date.now();
+      banner(role==="murderer"
+        ?'<div class="em">🗡️</div><div class="big" style="color:#ff5555">MURDERER</div><div>Eliminate the innocents without being caught.'+(partners.length?"<br>Your partner: "+esc(partners.map(nameOf).join(", ")):"")+'</div>'
+        :'<div class="em">🛡️</div><div class="big" style="color:#7fd6ff">INNOCENT</div><div>Finish your tasks and find the murderer.</div>',3600);
+      beep(200,.4,"sawtooth");break;
     case "state":onState(m);break;
-    case "positions":for(const id in m.pos){if(id===me)continue;const o=others[id]||(others[id]={x:m.pos[id][0],y:m.pos[id][1]});o.tx=m.pos[id][0];o.ty=m.pos[id][1]}break;
+    case "positions":for(const id in m.pos){if(id===me)continue;const o=others[id]||(others[id]={x:m.pos[id][0],y:m.pos[id][1],face:1});o.tx=m.pos[id][0];o.ty=m.pos[id][1]}break;
     case "killOk":lastKill=Date.now();break;
-    case "youDied":toast("You died. You are now a ghost.");break;
-    case "meeting":toast(m.reportedBy?nameOf(m.reportedBy)+" reported a body!":"The night is over!");break;
+    case "killDenied":toast(m.reason==="range"?"Too far away!":m.reason==="cooldown"?"Still recharging…":"Can't kill that player");break;
+    case "youDied":banner('<div class="em">👻</div><div class="big" style="color:#aab">YOU DIED</div><div>You are a ghost now. You can see everything.</div>',2500);beep(100,.6,"sawtooth");break;
+    case "meeting":banner('<div class="em">📢</div><div class="big" style="color:#ffd96a">MEETING</div><div>'+(m.reportedBy?esc(nameOf(m.reportedBy))+" found a body!":"The night has ended…")+'</div>',2200);beep(440,.2);setTimeout(()=>beep(330,.4),220);break;
     case "taskProgress":tasks=m.total;break;
     case "chat":addChat(m.name,m.text);break;
-    case "voteCast":voted.add(m.voterId);renderVotes();break;
-    case "voteResult":toast(m.ejected?m.ejected.name+" was ejected ("+(m.ejected.wasMurderer?"a murderer!":"innocent")+")":"No one was ejected",5000);break;
+    case "voteCast":voted.add(m.voterId);renderDay();break;
+    case "voteResult":
+      banner(m.ejected?'<div class="em">'+(m.ejected.wasMurderer?"🎯":"😢")+'</div><div class="big" style="color:'+(m.ejected.wasMurderer?"#7fff9f":"#ff9f7f")+'">'+esc(m.ejected.name)+' was ejected</div><div>They were '+(m.ejected.wasMurderer?"a MURDERER!":"INNOCENT…")+'</div>'
+        :'<div class="em">🤷</div><div class="big">No one ejected</div>',3200);break;
     case "gameOver":showOver(m);break;
     case "error":toast(m.message);break;
   }
 }
-
 function onState(m){
   const prev=S.phase;S=m;const mp=meP();
   for(const p of m.players){
     if(p.id===me)continue;
-    if(!others[p.id]||(m.phase!==prev&&m.phase==="NIGHT_PHASE"))
-      others[p.id]={x:p.position.x,y:p.position.y,tx:p.position.x,ty:p.position.y};
+    if(!others[p.id]||(m.phase!==prev&&m.phase==="NIGHT_PHASE"))others[p.id]={x:p.position.x,y:p.position.y,tx:p.position.x,ty:p.position.y,face:1};
   }
   if(m.phase!==prev){
-    if(m.phase==="NIGHT_PHASE"){if(mp)pos={x:mp.position.x,y:mp.position.y};screen(null)}
-    if(m.phase==="DAY_PHASE"){voted=new Set();$("chat").innerHTML="";screen("day")}
+    if(m.phase==="NIGHT_PHASE"){if(mp){pos={x:mp.position.x,y:mp.position.y};cam={x:pos.x,y:pos.y}}screen(null)}
+    if(m.phase==="DAY_PHASE"){voted=new Set();myVote=null;$("chat").innerHTML="";screen("day")}
+    if(m.phase==="LOBBY"){partners=[];role="innocent";screen("lobby")}
   }
-  if(m.phase==="LOBBY"){screen("lobby");renderLobby()}
-  if(m.phase==="DAY_PHASE")renderVotes();
+  if(m.phase==="LOBBY"){if($("lobby").classList.contains("hidden")&&prev!=="LOBBY")screen("lobby");renderLobby()}
+  if(m.phase==="DAY_PHASE")renderDay();
 }
-
 function renderLobby(){
-  $("plist").innerHTML=S.players.map(p=>"<div>"+esc(p.name)+(p.id===S.hostId?" ★":"")+"</div>").join("");
+  if($("menu").classList.contains("hidden")===false)screen("lobby");
+  $("plist").innerHTML=S.players.map(p=>'<div class="prow">'+av(p)+'<span>'+esc(p.name)+(p.id===me?" (you)":"")+(p.id===S.hostId?" 👑":"")+'</span></div>').join("");
   const host=S.hostId===me;
-  $("start").classList.toggle("hidden",!host);
-  $("wait").classList.toggle("hidden",host);
+  $("start").classList.toggle("hidden",!host);$("wait").classList.toggle("hidden",host);
   $("start").disabled=S.players.length<3;
+  $("start").textContent=S.players.length<3?"Need 3+ players ("+S.players.length+")":"▶ Start game";
 }
-function addChat(n,t){const d=document.createElement("div");d.innerHTML="<b>"+esc(n)+":</b> "+esc(t);$("chat").appendChild(d);$("chat").scrollTop=1e9}
-function renderVotes(){
-  const can=isAlive()&&!voted.has(me);let h="";
-  for(const p of S.players.filter(p=>p.isAlive))
-    h+='<button data-id="'+p.id+'" '+(can?"":"disabled")+'>'+esc(p.name)+(voted.has(p.id)?" ✔":"")+'</button>';
-  h+='<button data-id="skip" '+(can?"":"disabled")+'>Skip</button>';
-  $("votes").innerHTML=h;
-  $("votes").querySelectorAll("button").forEach(b=>b.onclick=()=>send({t:"vote",targetId:b.dataset.id}));
+function addChat(n,t){const d=document.createElement("div");d.innerHTML="<b style='color:#e8c26a'>"+esc(n)+":</b> "+esc(t);$("chat").appendChild(d);$("chat").scrollTop=1e9}
+function renderDay(){
+  const alive=isAlive();
+  $("votes").innerHTML=S.players.map(p=>{
+    const dis=!alive||voted.has(me)||!p.isAlive;
+    return '<button class="vcard'+(p.isAlive?"":" dead")+(myVote===p.id?" mine":"")+'" data-id="'+p.id+'" '+(dis?"disabled":"")+'>'+av(p)+'<span>'+esc(p.name)+(p.id===me?" (you)":"")+'</span>'+(voted.has(p.id)?"<i>✔</i>":"")+(!p.isAlive?"<i>💀</i>":"")+'</button>';
+  }).join("")+'<button class="vcard'+(myVote==="skip"?" mine":"")+'" data-id="skip" '+((!alive||voted.has(me))?"disabled":"")+'><span class="av" style="background:#555">⏭️</span><span>Skip vote</span></button>';
+  $("votes").querySelectorAll("button").forEach(b=>b.onclick=()=>{myVote=b.dataset.id;send({t:"vote",targetId:b.dataset.id});beep(500,.1)});
+  $("msg").disabled=!alive;$("send").disabled=!alive;
 }
 function showOver(m){
-  $("otitle").textContent=m.winner==="innocents"?"Innocents win!":"Murderers win!";
-  $("oroles").innerHTML=S.players.map(p=>"<div>"+esc(p.name)+" — "+m.roles[p.id]+"</div>").join("");
-  $("again").classList.toggle("hidden",S.hostId!==me);
-  screen("over");
+  const win=m.winner==="innocents";
+  $("oemoji").textContent=win?"🏆":"🩸";
+  $("otitle").textContent=win?"Innocents win!":"Murderers win!";
+  $("otitle").style.color=win?"#7fd6ff":"#ff6b6b";
+  $("oroles").innerHTML=S.players.map(p=>'<div class="prow">'+av(p)+'<span>'+esc(p.name)+'</span><span style="margin-left:auto">'+(m.roles[p.id]==="murderer"?"🗡️ Murderer":"🛡️ Innocent")+'</span></div>').join("");
+  $("again").classList.toggle("hidden",S.hostId!==me);$("owait").classList.toggle("hidden",S.hostId===me);
+  screen("over");beep(win?660:150,.5);
 }
 
-/* ---- controls ---- */
+/* ---------- CONTROLS ---------- */
 const joyEl=$("joy"),knob=$("knob");
 function joyMove(e){
-  const r=joyEl.getBoundingClientRect();
-  let dx=e.clientX-(r.left+65),dy=e.clientY-(r.top+65);
-  const d=Math.hypot(dx,dy),max=55;
-  if(d>max){dx=dx/d*max;dy=dy/d*max}
-  joy={x:dx/max,y:dy/max};
-  knob.style.transform="translate("+dx+"px,"+dy+"px)";
+  const r=joyEl.getBoundingClientRect();let dx=e.clientX-(r.left+75),dy=e.clientY-(r.top+75);
+  const d=Math.hypot(dx,dy),max=60;if(d>max){dx=dx/d*max;dy=dy/d*max}
+  joy={x:dx/max,y:dy/max};knob.style.transform="translate("+dx+"px,"+dy+"px)";
 }
 joyEl.onpointerdown=e=>{joyEl.setPointerCapture(e.pointerId);joyMove(e)};
-joyEl.onpointermove=e=>{if(e.buttons)joyMove(e)};
+joyEl.onpointermove=e=>{if(e.buttons||e.pressure>0)joyMove(e)};
 joyEl.onpointerup=joyEl.onpointercancel=()=>{joy={x:0,y:0};knob.style.transform=""};
-onkeydown=e=>{keys[e.key.toLowerCase()]=1};
+onkeydown=e=>{if(document.activeElement.tagName==="INPUT")return;keys[e.key.toLowerCase()]=1};
 onkeyup=e=>{keys[e.key.toLowerCase()]=0};
+document.addEventListener("gesturestart",e=>e.preventDefault());
 
-/* ---- game loop ---- */
-const cv=$("c"),ctx=cv.getContext("2d");
+/* ---------- RENDER ---------- */
+const cv=$("c"),ctx=cv.getContext("2d"),mini=$("mini"),mctx=mini.getContext("2d");
+function resize(){const d=Math.min(2,devicePixelRatio||1);cv.width=innerWidth*d;cv.height=innerHeight*d}
+resize();addEventListener("resize",resize);
+
+function drawChar(o,p,mine,t){
+  const h=hue(p.id),col="hsl("+h+",65%,58%)",dk="hsl("+h+",55%,32%)";
+  const bob=o.moving?Math.sin(t*14)*2.2:Math.sin(t*2+h)*0.8;
+  ctx.save();ctx.translate(o.x,o.y+bob);
+  ctx.globalAlpha=p.isAlive?1:.5;
+  ctx.fillStyle="rgba(0,0,0,.4)";ctx.beginPath();ctx.ellipse(0,15-bob,14,6,0,0,7);ctx.fill();
+  ctx.fillStyle=dk;ctx.beginPath();ctx.moveTo(-14,15);ctx.quadraticCurveTo(-18,-8,0,-18);ctx.quadraticCurveTo(18,-8,14,15);
+  if(!p.isAlive){for(let i=0;i<4;i++)ctx.lineTo(14-i*7-3.5,i%2?15:21);ctx.lineTo(-14,15)}
+  ctx.closePath();ctx.fill();
+  ctx.fillStyle=col;ctx.beginPath();ctx.arc(0,-6,11,0,7);ctx.fill();
+  ctx.fillStyle="#140e1b";ctx.beginPath();ctx.ellipse(o.face*2.5,-5,7,6.5,0,0,7);ctx.fill();
+  ctx.fillStyle=p.isAlive?"#fff":"#9cf";ctx.fillRect(o.face*2.5-4.5,-8,3.2,3.6);ctx.fillRect(o.face*2.5+1.3,-8,3.2,3.6);
+  if(mine){ctx.strokeStyle="#ffd96a";ctx.lineWidth=2.5;ctx.beginPath();ctx.ellipse(0,15-bob,19,8,0,0,7);ctx.stroke()}
+  ctx.restore();
+  ctx.save();ctx.globalAlpha=p.isAlive?1:.6;ctx.font="bold 13px Georgia";ctx.textAlign="center";
+  const label=(partners.includes(p.id)?"🗡 ":"")+p.name,w=ctx.measureText(label).width+12;
+  ctx.fillStyle="rgba(0,0,0,.6)";ctx.beginPath();ctx.roundRect?ctx.roundRect(o.x-w/2,o.y-44,w,18,9):ctx.rect(o.x-w/2,o.y-44,w,18);ctx.fill();
+  ctx.fillStyle=partners.includes(p.id)?"#ff7070":"#fff";ctx.fillText(label,o.x,o.y-31);ctx.restore();
+}
+function draw(t){
+  const w=cv.width,h=cv.height,sc=Math.min(w,h)/(innerWidth<700?400:520);
+  ctx.setTransform(1,0,0,1,0,0);
+  ctx.fillStyle="#0b0911";ctx.fillRect(0,0,w,h);
+  if(S.phase!=="NIGHT_PHASE"||!me){return}
+  const imAlive=isAlive();
+  ctx.save();ctx.translate(w/2,h/2);ctx.scale(sc,sc);ctx.translate(-cam.x,-cam.y);
+  ctx.drawImage(MAP,0,0);
+  const vis=(x,y)=>!imAlive||Math.hypot(x-pos.x,y-pos.y)<VIS+30;
+  ctx.textAlign="center";ctx.textBaseline="middle";
+  for(const s of TASKS){
+    if(!vis(s.x,s.y))continue;const dn=done.has(s.id);
+    glow(ctx,s.x,s.y,50,dn?"rgba(80,255,120,.25)":"rgba(255,220,80,.35)");
+    ctx.font="30px serif";ctx.globalAlpha=dn?.5:1;ctx.fillText(dn?"✅":s.e,s.x,s.y+(dn?0:Math.sin(t*3+s.x)*3));ctx.globalAlpha=1;
+  }
+  for(const b of S.bodies){if(!vis(b.x,b.y))continue;ctx.font="34px serif";ctx.fillText("🩸",b.x,b.y+6);ctx.font="26px serif";ctx.fillText("💀",b.x,b.y-4)}
+  const list=S.players.slice().sort((a,b)=>((a.id===me?pos.y:(others[a.id]||{y:0}).y)-(b.id===me?pos.y:(others[b.id]||{y:0}).y)));
+  for(const p of list){
+    const mine=p.id===me,o=mine?{x:pos.x,y:pos.y,face,moving}:others[p.id];
+    if(!o)continue;
+    if(!mine&&!p.isAlive&&imAlive)continue;
+    if(!mine&&!vis(o.x,o.y))continue;
+    drawChar(o,p,mine,t);
+  }
+  ctx.restore();
+  const rad=VIS*sc;
+  const g=ctx.createRadialGradient(w/2,h/2,rad*(imAlive?.45:1.6),w/2,h/2,rad*(imAlive?1.05:2.4));
+  g.addColorStop(0,"rgba(5,3,10,0)");g.addColorStop(1,"rgba(5,3,10,"+(imAlive?.96:.55)+")");
+  ctx.fillStyle=g;ctx.fillRect(0,0,w,h);
+}
+function drawMini(){
+  mctx.clearRect(0,0,240,240);mctx.drawImage(MAP,0,0,240,240);
+  mctx.fillStyle="rgba(0,0,0,.35)";mctx.fillRect(0,0,240,240);
+  const k=240/2000;
+  if(role==="innocent"||!isAlive())for(const s of TASKS){if(done.has(s.id))continue;mctx.fillStyle="#ffd93a";mctx.beginPath();mctx.arc(s.x*k,s.y*k,5,0,7);mctx.fill()}
+  mctx.fillStyle="#fff";mctx.strokeStyle="#000";mctx.lineWidth=2;mctx.beginPath();mctx.arc(pos.x*k,pos.y*k,6,0,7);mctx.fill();mctx.stroke();
+}
 let last=performance.now(),sendT=0;
 function loop(now){
-  const dt=Math.min(0.1,(now-last)/1000);last=now;
-  cv.width=innerWidth;cv.height=innerHeight;
+  const dt=Math.min(0.1,(now-last)/1000),t=now/1000;last=now;
   if(S.phase==="NIGHT_PHASE"&&me){
-    let vx=joy.x+(keys.d||keys.arrowright?1:0)-(keys.a||keys.arrowleft?1:0);
-    let vy=joy.y+(keys.s||keys.arrowdown?1:0)-(keys.w||keys.arrowup?1:0);
-    const l=Math.hypot(vx,vy);
-    if(l>1){vx/=l;vy/=l}
-    if(l>0.05){
-      pos.x=Math.max(0,Math.min(cfg.mapW,pos.x+vx*250*dt));
-      pos.y=Math.max(0,Math.min(cfg.mapH,pos.y+vy*250*dt));
-      sendT+=dt;
-      if(sendT>0.08){sendT=0;send({t:"move",x:pos.x,y:pos.y})}
+    let vx=joy.x+((keys.d||keys.arrowright)?1:0)-((keys.a||keys.arrowleft)?1:0);
+    let vy=joy.y+((keys.s||keys.arrowdown)?1:0)-((keys.w||keys.arrowup)?1:0);
+    const l=Math.hypot(vx,vy);if(l>1){vx/=l;vy/=l}
+    moving=l>0.08;
+    if(moving){
+      if(Math.abs(vx)>0.2)face=vx>0?1:-1;
+      const nx=pos.x+vx*250*dt,ny=pos.y+vy*250*dt;
+      if(canStand(nx,pos.y))pos.x=nx;
+      if(canStand(pos.x,ny))pos.y=ny;
+      sendT+=dt;if(sendT>0.08){sendT=0;send({t:"move",x:pos.x,y:pos.y})}
     }
+    cam.x+=(pos.x-cam.x)*Math.min(1,dt*10);cam.y+=(pos.y-cam.y)*Math.min(1,dt*10);
   }
-  for(const id in others){const o=others[id];if(o.tx!==undefined){o.x+=(o.tx-o.x)*Math.min(1,dt*12);o.y+=(o.ty-o.y)*Math.min(1,dt*12)}}
-  draw();updateUI();
+  for(const id in others){const o=others[id];if(o.tx===undefined)continue;
+    const dx=o.tx-o.x,dy=o.ty-o.y;o.moving=Math.hypot(dx,dy)>1.5;if(Math.abs(dx)>0.6)o.face=dx>0?1:-1;
+    o.x+=dx*Math.min(1,dt*12);o.y+=dy*Math.min(1,dt*12)}
+  draw(t);updateUI();
   requestAnimationFrame(loop);
-}
-function draw(){
-  const w=cv.width,h=cv.height,sc=Math.min(w,h)/600;
-  ctx.fillStyle="#1b1824";ctx.fillRect(0,0,w,h);
-  ctx.save();ctx.translate(w/2,h/2);ctx.scale(sc,sc);ctx.translate(-pos.x,-pos.y);
-  ctx.fillStyle="#26223a";ctx.fillRect(0,0,cfg.mapW,cfg.mapH);
-  ctx.strokeStyle="#ffffff12";ctx.lineWidth=1;
-  for(let i=0;i<=cfg.mapW;i+=100){
-    ctx.beginPath();ctx.moveTo(i,0);ctx.lineTo(i,cfg.mapH);ctx.stroke();
-    ctx.beginPath();ctx.moveTo(0,i);ctx.lineTo(cfg.mapW,i);ctx.stroke();
-  }
-  ctx.strokeStyle="#e8c26a";ctx.lineWidth=6;ctx.strokeRect(0,0,cfg.mapW,cfg.mapH);
-  for(const s of STATIONS){ctx.fillStyle=done.has(s.id)?"#3c3":"#eb3";ctx.fillRect(s.x-15,s.y-15,30,30)}
-  ctx.fillStyle="#c33";ctx.font="bold 36px sans-serif";ctx.textAlign="center";
-  for(const b of S.bodies)ctx.fillText("✖",b.x,b.y+12);
-  const imAlive=isAlive();
-  for(const p of S.players){
-    const mine=p.id===me,o=mine?pos:others[p.id];
-    if(!o)continue;
-    if(!p.isAlive&&!mine&&imAlive)continue;
-    ctx.globalAlpha=p.isAlive?1:0.4;
-    ctx.fillStyle="hsl("+(hash(p.id)%360)+",70%,55%)";
-    ctx.beginPath();ctx.arc(o.x,o.y,18,0,7);ctx.fill();
-    if(mine){ctx.strokeStyle="#fff";ctx.lineWidth=3;ctx.stroke()}
-    ctx.fillStyle=partners.includes(p.id)?"#f55":"#fff";
-    ctx.font="14px sans-serif";ctx.fillText(p.name,o.x,o.y-26);
-  }
-  ctx.globalAlpha=1;ctx.restore();
 }
 function updateUI(){
   const night=S.phase==="NIGHT_PHASE"&&me;
-  const t=Math.max(0,Math.round((S.endsAt-(Date.now()+offset))/1000));
-  const clock=Math.floor(t/60)+":"+String(t%60).padStart(2,"0");
-  $("hud").textContent=night?("NIGHT "+clock+" · Tasks "+tasks.done+"/"+tasks.needed+" · You: "+role):"";
-  $("joy").classList.toggle("hidden",!night);
-  $("acts").classList.toggle("hidden",!night);
-  if(S.phase==="DAY_PHASE")$("dtitle").textContent="Discuss & vote — "+clock;
+  const tl=Math.max(0,Math.round((S.endsAt-(Date.now()+offset))/1000));
+  const clock=Math.floor(tl/60)+":"+String(tl%60).padStart(2,"0");
+  if(S.phase==="DAY_PHASE")$("dtitle").textContent="🗳️ Discuss & vote — "+clock;
   if(!night)return;
   const alive=isAlive();
+  $("rolechip").textContent=(alive?"":"👻 Ghost · ")+(role==="murderer"?"🗡️ Murderer":"🛡️ Innocent");
+  $("rolechip").style.color=role==="murderer"?"#ff7a7a":"#8fdcff";
+  $("clock").textContent="🌙 "+clock+"  ·  Tasks "+tasks.done+"/"+tasks.needed;
+  $("barfill").style.width=(tasks.needed?tasks.done/tasks.needed*100:0)+"%";
   killTarget=null;station=null;body=null;
-  if(alive&&role==="murderer"){
-    let best=1e9;
-    for(const p of S.players){
-      if(p.id===me||!p.isAlive||partners.includes(p.id))continue;
-      const o=others[p.id];if(!o)continue;
-      const d=Math.hypot(o.x-pos.x,o.y-pos.y);
-      if(d<cfg.killRange*0.85&&d<best){best=d;killTarget=p}
-    }
-  }
+  if(alive&&role==="murderer"){let best=1e9;
+    for(const p of S.players){if(p.id===me||!p.isAlive||partners.includes(p.id))continue;const o=others[p.id];if(!o)continue;
+      const d=Math.hypot(o.x-pos.x,o.y-pos.y);if(d<cfg.killRange*0.85&&d<best){best=d;killTarget=p}}}
   if(alive&&role==="innocent"&&done.size<cfg.tasksPerPlayer)
-    station=STATIONS.find(s=>!done.has(s.id)&&Math.hypot(s.x-pos.x,s.y-pos.y)<70)||null;
+    station=TASKS.find(s=>!done.has(s.id)&&Math.hypot(s.x-pos.x,s.y-pos.y)<70)||null;
   if(alive)body=S.bodies.find(b=>Math.hypot(b.x-pos.x,b.y-pos.y)<cfg.reportRange*0.85)||null;
   const cd=Math.ceil((lastKill+cfg.killCooldownMs-Date.now())/1000);
-  const k=$("bkill");
-  k.classList.toggle("hidden",!(alive&&role==="murderer"));
-  k.disabled=!killTarget||cd>0;
-  k.textContent=cd>0?"KILL "+cd:"KILL";
-  $("btask").classList.toggle("hidden",role!=="innocent"||!alive);
-  $("btask").disabled=!station;
-  $("brep").classList.toggle("hidden",!alive);
-  $("brep").disabled=!body;
+  const k=$("bkill");k.classList.toggle("hidden",!(alive&&role==="murderer"));
+  k.disabled=!killTarget||cd>0;k.innerHTML="🗡️<small>"+(cd>0?cd+"s":"KILL")+"</small>";
+  $("btask").classList.toggle("hidden",role!=="innocent"||!alive);$("btask").disabled=!station;
+  $("btask").innerHTML=(station?station.e:"✨")+"<small>"+(station?"TASK":"TASK")+"</small>";
+  $("brep").classList.toggle("hidden",!alive);$("brep").disabled=!body;
+  drawMini();
 }
 requestAnimationFrame(loop);
 </script>
